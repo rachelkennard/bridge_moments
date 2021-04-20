@@ -7,7 +7,8 @@
                 for a given k value 
 ** Input: input a k value that is within bounds of equation
 ** Output: prints out maximum moment, corresponding x value, 
-           support reaction value, and k that was used
+           support reaction value, and k that was used to 
+           a separate text file for each case
 ******************************************************/
 
 #include <iostream>
