@@ -208,6 +208,131 @@ void case2(float L, float d1, float d2, float k, float p1, float p2){
     output.close();
 }
 
+//case 3 
+//function solving for case 3, prints out the max moment to new file
+void case3(float L, float d1, float d2, float k, float p1, float p2, float p3){
+
+    //creating output file to store moment information, truncating it
+    ofstream output;
+    output.open ("output_case3.txt", ios::out | ios::app);
+
+    // output << "k"; 
+    // output << '\t';
+    // output << "x" ;
+    // output << '\t';
+    // output << "max M" ;
+    // output << '\t';
+    // output << "tot_shear";
+    // output << '\n';
+
+    if (output.is_open()) {
+        //cout << "File successfully opened " << endl;
+    }
+
+    float dead_m = 0.00,
+    live_m = 0.00,    
+    max = 0.00,
+    tot_m = 0.00,
+    x = 0.00;
+
+    //calculation of Al
+    float Al = 0.00;
+    Al = ((p1 * (L - k)) + (p2 * (L - (k - d1))) + (p3 * ((L - (k - d2))))) / L;
+    //Al = 8.935;
+
+    //calculation of dead shear
+    float Vd = 0.15 * (L/2);
+
+    //where i is the distance along the bridge
+    for (float i = 0.10; i < (k - d2); i = i + 0.1){
+
+        //calculation dead load
+        dead_m = dead_func(i, L);
+
+        //calculation live load
+        live_m = Al * i;
+
+        tot_m = dead_m + live_m;
+
+        //check if max moment has been calculated (if it's greater than previous moment)
+        if (max == 0.00){
+            max = tot_m;
+            x = i;
+        }
+        else if (tot_m > max){
+            max = tot_m;
+            x = i;
+        }
+    }
+
+    for (float i = (k - d2); i < (k - d1); i = i + 0.1){
+        dead_m = dead_func(i, L);
+
+        live_m = (Al * i) - (p3 * (i - (k - d2)));
+
+        tot_m = dead_m + live_m;
+
+        //check if max moment has been calculated (if it's greater than previous moment)
+        if (max == 0.00){
+            max = tot_m;
+            x = i;
+        }
+        else if (tot_m > max){
+            max = tot_m;
+            x = i;
+        }
+    }
+
+    for (float i = (k - d1); i < k; i = i + 0.1){
+        dead_m = dead_func(i, L);
+
+        live_m = (Al * i) - (p3 * (i - (k - d2))) - (p2 * (i - (k - d1)));
+
+        tot_m = dead_m + live_m;
+
+        //check if max moment has been calculated (if it's greater than previous moment)
+        if (max == 0.00){
+            max = tot_m;
+            x = i;
+        }
+        else if (tot_m > max){
+            max = tot_m;
+            x = i;
+        }
+    }
+
+    for (float i = k; i < L; i = i + 0.1){
+        dead_m = dead_func(i, L);
+
+        live_m = (Al * i) - (p3 * (i - (k - d2))) - (p2 * (i - (k - d1))) - p1 * (i - k);
+
+        tot_m = dead_m + live_m;
+
+        //check if max moment has been calculated (if it's greater than previous moment)
+        if (max == 0.00){
+            max = tot_m;
+            x = i;
+        }
+        else if (tot_m > max){
+            max = tot_m;
+            x = i;
+        }
+    }
+
+    float tot_shear = Al + Vd;
+
+    output << k; 
+    output << '\t';
+    output << x ;
+    output << '\t';
+    output << max ;
+    output << '\t';
+    output << tot_shear;
+    output << '\n';
+
+    output.close();
+}
+
 
 int main(){
 
@@ -236,6 +361,10 @@ int main(){
 
     for (float k = d1; k < (d1 + d2); k = k + 0.1){
         case2(L, d1, d2, k, p1, p2);
+    }
+
+    for (float k = d2; k < L; k = (k + 0.1)){
+        case3(L, d1, d2, k, p1, p2, p3);
     }
 
     return 0;
